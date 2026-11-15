@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CALC-U-TORTURE 3000 (v0.0.1-alpha)</title>
+  <style>
+    :root {
+      --bg-toxic: #fff700;
+      --neon-pink: #ff007f;
+      --ugly-green: #00ff66;
+      --retro-blue: #000080;
+      --bruise-purple: #4b0082;
+      --font-terrible: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: repeating-linear-gradient(
+        45deg,
+        #ffee00,
+        #ffee00 20px,
+        #ff0055 20px,
+        #ff0055 40px
+      );
+      font-family: var(--font-terrible);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      cursor: wait;
+    }
+
+    /* Screen Crack Overlay */
+    .screen-crack {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 70% 30%, transparent 60%, rgba(255,255,255,0.4) 62%, transparent 63%),
+                  linear-gradient(135deg, transparent 48%, rgba(255,255,255,0.5) 49%, transparent 51%);
+      z-index: 9999;
+      opacity: 0.6;
+    }
+
+    /* Top Marquee */
+    .ticker {
+      width: 100%;
+      max-width: 600px;
+      background: #000;
+      color: #00ff00;
+      padding: 6px;
+      font-family: monospace;
+      font-size: 14px;
+      border: 3px double #ff00ff;
+      margin-bottom: 12px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    /* App Container */
+    .calculator-frame {
+      width: 100%;
+      max-width: 480px;
+      background: #c0c0c0;
+      border: 5px outset #ffffff;
+      box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.7);
+      padding: 14px;
+      position: relative;
+      animation: subtle-wobble 14s infinite ease-in-out;
+    }
+
+    @keyframes subtle-wobble {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(0.4deg); }
+      75% { transform: rotate(-0.4deg); }
+    }
+
+    .header-bar {
+      background: linear-gradient(90deg, #000080, #1084d0);
+      color: white;
+      padding: 4px 8px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .window-btns span {
+      background: #c0c0c0;
+      color: black;
+      border: 1px outset white;
+      padding: 1px 5px;
+      font-size: 10px;
+      margin-left: 2px;
+      cursor: not-allowed;
+    }
+
+    /* Regret HUD */
+    .hud {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      background: #222;
+      color: #ff3333;
+      padding: 6px;
+      font-family: monospace;
+      font-size: 11px;
+      border: 2px inset #555;
+      margin-bottom: 10px;
+    }
+
+    .hud-item {
+      text-align: center;
+    }
+    .hud-val {
+      font-size: 14px;
+      font-weight: bold;
+      color: #00ffcc;
+    }
+
+    /* Display */
+    .display-box {
+      background: #99af8a;
+      border: 4px inset #555;
+      padding: 10px;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: inset 2px 2px 8px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .display-subtext {
+      font-size: 12px;
+      font-family: monospace;
+      color: #384232;
+      text-align: right;
+      height: 16px;
+      overflow: hidden;
+    }
+
+    .display-main {
+      font-size: 32px;
+      font-family: "Courier New", monospace;
+      font-weight: bold;
+      color: #1a2217;
+      text-align: right;
+      letter-spacing: 2px;
+      word-break: break-all;
+    }
+
+    .display-glare {
+      position: absolute;
+      top: -20px;
+      left: -20px;
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Keypad Grid */
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    /* Hold-to-Click Button Styling */
+    .calc-btn {
+      position: relative;
+      height: 58px;
+      background: #dfdfdf;
+      border: 3px outset #ffffff;
+      font-family: var(--font-terrible);
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      outline: none;
+      transition: transform 0.05s;
+      overflow: hidden;
+    }
+
+    .calc-btn:active {
+      border: 3px inset #777;
+    }
+
+    .btn-label {
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn-sub-hint {
+      font-size: 8px;
+      color: #666;
+      font-family: sans-serif;
+      margin-top: 1px;
+    }
+
+    /* Hold meter progress bar inside button */
+    .btn-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: rgba(255, 0, 102, 0.4);
+      z-index: 1;
+      pointer-events: none;
+      transition: width 0.05s linear;
+    }
+
+    .btn-op {
+      background: #ffd699;
+    }
+    .btn-clear {
+      background: #ff9999;
+      color: #660000;
+    }
+
+    /* Fleeing Equals Button */
+    #btn-equals {
+      background: #66ff66;
+      border-color: #00aa00;
+      font-size: 24px;
+      transition: top 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28), left 0.2s ease;
+    }
+
+    /* Calcy Assistant */
+    .calcy-bubble {
+      position: fixed;
+      bottom: 20px;
+      right: 25px;
+      background: #ffffe1;
+      border: 2px solid black;
+      border-radius: 12px;
+      padding: 12px 14px;
+      max-width: 250px;
+      font-size: 13px;
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.8);
+      z-index: 1000;
+      animation: bounce 3s infinite alternate ease-in-out;
+    }
+
+    .calcy-bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      right: 35px;
+      border-width: 10px 10px 0;
+      border-style: solid;
+      border-color: #ffffe1 transparent;
+      display: block;
+      width: 0;
+    }
+
+    .calcy-avatar {
+      font-size: 28px;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    @keyframes bounce {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-8px); }
+    }
+
+    /* Modal / Bureaucracy Overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .modal-card {
+      background: #ece9d8;
+      border: 4px outset #fff;
+      max-width: 440px;
+      width: 100%;
+      padding: 18px;
+      box-shadow: 10px 10px 25px rgba(0,0,0,0.9);
+      font-family: "Tahoma", sans-serif;
+    }
+
+    .progress-track {
+      background: #fff;
+      border: 2px inset #666;
+      height: 26px;
+      width: 100%;
+      position: relative;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: repeating-linear-gradient(
+        -45deg,
+        #0055ff,
+        #0055ff 10px,
+        #3388ff 10px,
+        #3388ff 20px
+      );
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .modal-log {
+      font-family: monospace;
+      font-size: 11px;
+      background: #000;
+      color: #00ff44;
+      padding: 8px;
+      height: 70px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      border: 2px inset #444;
+    }
+
+    /* Redacted Paywall Flash */
+    .paywall-stamp {
+      background: red;
+      color: yellow;
+      font-weight: 900;
+      font-size: 16px;
+      padding: 5px;
+      border: 3px dashed black;
+      transform: rotate(-3deg);
+      text-align: center;
+      margin: 10px 0;
+      animation: strobe 0.3s infinite;
+    }
+
+    @keyframes strobe {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    .ad-countdown {
+      font-size: 24px;
+      font-weight: bold;
+      color: #b30000;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 450px) {
+      .calculator-frame {
+        padding: 8px;
+      }
+      .calc-btn {
+        height: 50px;
+        font-size: 15px;
+      }
+      .calcy-bubble {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="screen-crack"></div>
+
+  <!-- Obnoxious Ticker -->
+  <div class="ticker">
+    🚨 WARNING: PRESS & HOLD KEYS FOR 1.8 SECONDS • RESULTS SUBJECT TO QUANTUM CORRUPTION • DO NOT REFRESH OR ALL DATA WILL BE FORFEITED • CALC-U-TORTURE ENTERPRISE v0.0.1 🚨
+  </div>
+
+  <div class="calculator-frame" id="calcFrame">
+    <!-- Retro Title Bar -->
+    <div class="header-bar">
+      <span>🖩 Calc-U-Torture Pro (Unregistered Trial: Day 4,129)</span>
+      <div class="window-btns">
+        <span>?</span>
+        <span>_</span>
+        <span>X</span>
+      </div>
+    </div>
+
+    <!-- Regret & Patience HUD -->
+    <div class="hud">
+      <div class="hud-item">
+        <div>TIME WASTED</div>
+        <div class="hud-val" id="timeWasted">0s</div>
+      </div>
+      <div class="hud-item">
+        <div>USER PATIENCE</div>
+        <div class="hud-val" id="patienceLevel">100%</div>
+      </div>
+      <div class="hud-item">
+        <div>RAGE INDEX</div>
+        <div class="hud-val" id="rageIndex">LOW</div>
+      </div>
+    </div>
+
+    <!-- Display -->
+    <div class="display-box">
+      <div class="display-glare"></div>
+      <div class="display-subtext" id="displayFormula">READY FOR SUFFERING</div>
+      <div class="display-main" id="displayMain">0</div>
+    </div>
+
+    <!-- Keypad Grid -->
+    <div class="keypad-grid" id="keypad">
+      <!-- Row 1 -->
+      <button class="calc-btn btn-clear" data-val="C">
+        <span class="btn-label">C</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn" data-val="RANDOM_DROP">
+        <span class="btn-label">⌫</span>
+        <span class="btn-sub-hint">Deletes Random</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn btn-op" data-val="%">
+        <span class="btn-label">mod</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn btn-op" data-val="/">
+        <span class="btn-label">÷</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+
+      <!-- Row 2 -->
+      <button class="calc-btn" data-val="7">
+        <span class="btn-label">7</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn" data-val="8">
+        <span class="btn-label">8</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn" data-val="9">
+        <span class="btn-label">9</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn btn-op" data-val="*">
+        <span class="btn-label">×</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+
+      <!-- Row 3 -->
+      <button class="calc-btn" data-val="4">
+        <span class="btn-label">4</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn" data-val="5">
+        <span class="btn-label">5</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn" data-val="6">
+        <span class="btn-label">6</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn btn-op" data-val="-">
+        <span class="btn-label">-</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+
+      <!-- Row 4 -->
+      <button class="calc-btn" data-val="1">
+        <span class="btn-label">1</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn" data-val="2">
+        <span class="btn-label">2</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn" data-val="3">
+        <span class="btn-label">3</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn btn-op" data-val="+">
+        <span class="btn-label">+</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+
+      <!-- Row 5 -->
+      <button class="calc-btn" data-val="0">
+        <span class="btn-label">0</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn" data-val=".">
+        <span class="btn-label">.</span>
+        <span class="btn-sub-hint">Hold 1.8s</span>
+        <div class="btn-progress"></div>
+      </button>
+      <button class="calc-btn" data-val="SURPRISE">
+        <span class="btn-label">❓</span>
+        <span class="btn-sub-hint">Chaos</span>
+        <div class="btn-progress"></div>
+      </button>
+      <!-- The Infamous Runaway Equals Button -->
+      <button class="calc-btn" id="btn-equals" data-val="=">
+        <span class="btn-label">=</span>
+        <span class="btn-sub-hint">Runaway</span>
+        <div class="btn-progress"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Calcy Assistant -->
+  <div class="calcy-bubble" id="calcy">
+    <span class="calcy-avatar">📎</span>
+    <span id="calcyText">"Hi! I'm Calc-y! It looks like you're trying to calculate something basic. Would you like me to make it much harder?"</span>
+  </div>
+
+  <!-- Bureaucracy Modal Window -->
+  <div class="modal-overlay" id="calcModal">
+    <div class="modal-card">
+      <div style="font-weight: bold; border-bottom: 2px solid #999; padding-bottom: 5px; margin-bottom: 10px;">
+        ⚙️ Quantum Calculation Protocol in Progress...
+      </div>
+      <div id="modalPhaseTitle" style="font-size: 13px; font-weight: bold; margin-bottom: 4px;">
+        Contacting Offshore Math Server (Phase 1 of 5)...
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="modalProgress"></div>
+      </div>
+      <div class="modal-log" id="modalLog">
+        > Booting virtual abacus...<br>
+        > Checking user math credentials...
+      </div>
+
+      <!-- Human Verification Puzzle (Step 4) -->
+      <div id="captchaSection" style="display: none; background: #fff; border: 2px dashed red; padding: 10px; margin: 10px 0;">
+        <div style="font-weight: bold; color: red; font-size: 12px; margin-bottom: 6px;">
+          🤖 HUMAN PATIENCE VERIFICATION:
+        </div>
+        <div id="captchaQuestion" style="font-size: 13px; margin-bottom: 8px;">
+          Question goes here
+        </div>
+        <div id="captchaOptions" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+      </div>
+
+      <!-- Result Reveal / Redaction Countdown -->
+      <div id="revealSection" style="display: none;">
+        <div class="paywall-stamp">🔒 PREVIEW EXPIRED! RESULT REDACTED</div>
+        <p style="font-size: 12px; text-align: center; margin: 0;">
+          To view your mathematical result, please endure this mandatory 10-second sponsor break.
+        </p>
+        <div class="ad-countdown" id="adTimer">10</div>
+        <button id="claimResultBtn" disabled style="width: 100%; padding: 8px; font-weight: bold; cursor: not-allowed;">
+          Please wait for countdown...
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Audio Synthesizer (Zero external dependencies) ---
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new AudioCtx();
+    }
+
+    function playBeep(freq = 440, type = 'sine', duration = 0.08, gainVal = 0.15) {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playHarshError() {
+      playBeep(150, 'sawtooth', 0.25, 0.3);
+      setTimeout(() => playBeep(120, 'square', 0.35, 0.3), 120);
+    }
+
+    function playSuccessChime() {
+      playBeep(523, 'triangle', 0.1, 0.2);
+      setTimeout(() => playBeep(659, 'triangle', 0.1, 0.2), 80);
+      setTimeout(() => playBeep(784, 'triangle', 0.2, 0.2), 160);
+    }
+
+    function playTicking() {
+      playBeep(1200, 'square', 0.02, 0.04);
+    }
+
+    // --- State Variables ---
+    let currentInput = "0";
+    let pendingOp = null;
+    let storedValue = null;
+    let isCalculated = false;
+
+    let secondsWasted = 0;
+    let patience = 100;
+    let equalsEscapes = 0;
+
+    const HOLD_TIME_MS = 1800; // 1.8 seconds hold to register a key!
+
+    // Elements
+    const displayMain = document.getElementById("displayMain");
+    const displayFormula = document.getElementById("displayFormula");
+    const timeWastedEl = document.getElementById("timeWasted");
+    const patienceLevelEl = document.getElementById("patienceLevel");
+    const rageIndexEl = document.getElementById("rageIndex");
+    const calcyText = document.getElementById("calcyText");
+    const equalsBtn = document.getElementById("btn-equals");
+    const calcFrame = document.getElementById("calcFrame");
+
+    // Modal elements
+    const calcModal = document.getElementById("calcModal");
+    const modalProgress = document.getElementById("modalProgress");
+    const modalPhaseTitle = document.getElementById("modalPhaseTitle");
+    const modalLog = document.getElementById("modalLog");
+    const captchaSection = document.getElementById("captchaSection");
+    const captchaQuestion = document.getElementById("captchaQuestion");
+    const captchaOptions = document.getElementById("captchaOptions");
+    const revealSection = document.getElementById("revealSection");
+    const adTimer = document.getElementById("adTimer");
+    const claimResultBtn = document.getElementById("claimResultBtn");
+
+    // --- Timer HUD ---
+    setInterval(() => {
+      secondsWasted++;
+      timeWastedEl.textContent = `${secondsWasted}s`;
+
+      if (secondsWasted > 30 && patience > 40) {
+        patience = Math.max(12, patience - 1);
+        patienceLevelEl.textContent = `${patience}%`;
+      }
+      if (secondsWasted > 45) rageIndexEl.textContent = "HIGH";
+      if (secondsWasted > 90) rageIndexEl.textContent = "LETHAL";
+    }, 1000);
+
+    // --- Calcy Passive-Aggressive Commentary ---
+    const calcyInsults = [
+      "\"Are you sure that's the number you wanted? Think carefully.\"",
+      "\"Tip: If you give up now, you save 100% of your remaining brain cells.\"",
+      "\"Studies show 94% of people make a mistake on the very next click.\"",
+      "\"Did you know? In ancient Rome, calculating this was punishable by sighing.\"",
+      "\"I've seen slower math, but it was done by geological tectonic plates.\"",
+      "\"Why add numbers when you could stare out the window in existential dread?\"",
+      "\"Careful! That button looks slippery.\""
+    ];
+
+    setInterval(() => {
+      const idx = Math.floor(Math.random() * calcyInsults.length);
+      calcyText.textContent = calcyInsults[idx];
+    }, 9000);
+
+    // --- Runaway Equals Button (Flee from Cursor) ---
+    equalsBtn.addEventListener("mouseover", (e) => {
+      if (equalsEscapes < 4) {
+        equalsEscapes++;
+        playBeep(600 + equalsEscapes * 100, "sawtooth", 0.05);
+
+        // Randomly reposition within frame
+        const xOffset = (Math.random() - 0.5) * 160;
+        const yOffset = (Math.random() - 0.5) * 120;
+        equalsBtn.style.transform = `translate(${xOffset}px, ${yOffset}px) scale(${0.85 - equalsEscapes * 0.08})`;
+
+        displayFormula.textContent = `🚨 EQUALS BUTTON HAS FLED! (${4 - equalsEscapes} dodges left)`;
+        patience = Math.max(5, patience - 4);
+        patienceLevelEl.textContent = `${patience}%`;
+      } else {
+        // Finally allow them to hover
+        equalsBtn.style.transform = "none";
+        displayFormula.textContent = "Equals cornered! Quick, hold it down!";
+      }
+    });
+
+    // --- Agonizing Hold-To-Press Handler ---
+    let holdTimer = null;
+    let holdProgressInterval = null;
+    let holdStartTime = 0;
+    let activeBtn = null;
+
+    document.querySelectorAll(".calc-btn").forEach(btn => {
+      const progressEl = btn.querySelector(".btn-progress");
+
+      const startHold = (e) => {
+        e.preventDefault();
+        initAudio();
+        activeBtn = btn;
+        holdStartTime = Date.now();
+        playBeep(300, "sine", 0.05);
+
+        // Animate fill progress
+        holdProgressInterval = setInterval(() => {
+          const elapsed = Date.now() - holdStartTime;
+          const pct = Math.min(100, (elapsed / HOLD_TIME_MS) * 100);
+          if (progressEl) progressEl.style.width = `${pct}%`;
+          playTicking();
+        }, 50);
+
+        holdTimer = setTimeout(() => {
+          clearInterval(holdProgressInterval);
+          if (progressEl) progressEl.style.width = "0%";
+          playSuccessChime();
+          const val = btn.getAttribute("data-val");
+          handleButtonAction(val);
+          activeBtn = null;
+        }, HOLD_TIME_MS);
+      };
+
+      const cancelHold = (e) => {
+        if (activeBtn === btn && holdTimer) {
+          clearTimeout(holdTimer);
+          clearInterval(holdProgressInterval);
+          if (progressEl) progressEl.style.width = "0%";
+          playHarshError();
+
+          displayFormula.textContent = "❌ RELEASED TOO EARLY! KEY DISCARDED.";
+          patience = Math.max(1, patience - 3);
+          patienceLevelEl.textContent = `${patience}%`;
+          activeBtn = null;
+        }
+      };
+
+      btn.addEventListener("mousedown", startHold);
+      btn.addEventListener("mouseup", cancelHold);
+      btn.addEventListener("mouseleave", cancelHold);
+
+      // Mobile touch support
+      btn.addEventListener("touchstart", startHold);
+      btn.addEventListener("touchend", cancelHold);
+      btn.addEventListener("touchcancel", cancelHold);
+    });
+
+    // --- Calculator Actions ---
+    function handleButtonAction(val) {
+      if (!val) return;
+
+      if (val >= "0" && val <= "9") {
+        if (currentInput === "0" || isCalculated) {
+          currentInput = val;
+          isCalculated = false;
+        } else {
+          currentInput += val;
+        }
+        displayMain.textContent = currentInput;
+        displayFormula.textContent = `INPUT DIGIT: ${val}`;
+        scrambleRandomKey();
+      } else if (val === ".") {
+        if (!currentInput.includes(".")) {
+          currentInput += ".";
+          displayMain.textContent = currentInput;
+        }
+      } else if (val === "C") {
+        currentInput = "0";
+        pendingOp = null;
+        storedValue = null;
+        displayMain.textContent = "0";
+        displayFormula.textContent = "ALL MEMORY PURGED (SORRY)";
+      } else if (val === "RANDOM_DROP") {
+        // Deletes a random character, not the last one
+        if (currentInput.length > 1) {
+          const dropIdx = Math.floor(Math.random() * currentInput.length);
+          currentInput = currentInput.slice(0, dropIdx) + currentInput.slice(dropIdx + 1);
+          displayMain.textContent = currentInput;
+          displayFormula.textContent = `DELETED DIGIT AT POSITION #${dropIdx + 1} (NOT THE LAST ONE)`;
+        } else {
+          currentInput = "0";
+          displayMain.textContent = "0";
+        }
+      } else if (val === "SURPRISE") {
+        // Inverts display or swaps values
+        currentInput = (parseFloat(currentInput) * (Math.random() > 0.5 ? -1 : 42)).toString();
+        displayMain.textContent = currentInput;
+        displayFormula.textContent = "CHAOS APPLIED TO NUMBER";
+        calcFrame.style.filter = `hue-rotate(${Math.floor(Math.random() * 360)}deg)`;
+      } else if (["+", "-", "*", "/", "%"].includes(val)) {
+        storedValue = parseFloat(currentInput);
+        pendingOp = val;
+        currentInput = "0";
+        displayFormula.textContent = `STORED: ${storedValue} [OPERATOR: ${val}]`;
+      } else if (val === "=") {
+        startBureaucraticCalculation();
+      }
+    }
+
+    // --- Scramble Buttons Randomly to Defeat Muscle Memory ---
+    function scrambleRandomKey() {
+      // 30% chance after digit to scramble two buttons' position
+      if (Math.random() < 0.35) {
+        const buttons = Array.from(document.querySelectorAll(".calc-btn:not(#btn-equals)"));
+        const b1 = buttons[Math.floor(Math.random() * buttons.length)];
+        const b2 = buttons[Math.floor(Math.random() * buttons.length)];
+        if (b1 && b2 && b1 !== b2) {
+          const tempVal = b1.getAttribute("data-val");
+          const tempLabel = b1.querySelector(".btn-label").textContent;
+
+          b1.setAttribute("data-val", b2.getAttribute("data-val"));
+          b1.querySelector(".btn-label").textContent = b2.querySelector(".btn-label").textContent;
+
+          b2.setAttribute("data-val", tempVal);
+          b2.querySelector(".btn-label").textContent = tempLabel;
+
+          displayFormula.textContent = "🔀 ALERT: BUTTONS SHUFFLED FOR YOUR SAFETY";
+        }
+      }
+    }
+
+    // --- The 5-Stage Bureaucratic Calculation Pipeline ---
+    function startBureaucraticCalculation() {
+      calcModal.style.display = "flex";
+      modalProgress.style.width = "0%";
+      modalLog.innerHTML = "> Initializing multi-cloud consensus protocol...<br>";
+      captchaSection.style.display = "none";
+      revealSection.style.display = "none";
+
+      let progress = 0;
+      modalPhaseTitle.textContent = "Stage 1: Authenticating Mathematical Proof...";
+
+      const logLines = [
+        "Encrypting number payloads...",
+        "Querying international decimal registry...",
+        "Resolving floating-point existential dread...",
+        "WARNING: Heavy server load in region us-east-nowhere.",
+        "Stalling at 99% intentionally to build anticipation..."
+      ];
+
+      let logIdx = 0;
+      let rolledBack = false;
+
+      const progressTimer = setInterval(() => {
+        progress += Math.floor(Math.random() * 6) + 3;
+
+        // Print log lines steadily as progress moves up
+        if (logIdx < logLines.length && progress > (logIdx + 1) * 16) {
+          modalLog.innerHTML += `> ${logLines[logIdx]}<br>`;
+          modalLog.scrollTop = modalLog.scrollHeight;
+          logIdx++;
+          playBeep(250, "sine", 0.05);
+        }
+
+        // The evil rollback trick at 99%!
+        if (progress >= 99 && !rolledBack) {
+          rolledBack = true;
+          clearInterval(progressTimer);
+          modalProgress.style.width = "99%";
+          modalPhaseTitle.textContent = "Finalizing calculations...";
+          modalLog.innerHTML += "> <b style='color:yellow'>ERROR 418: QUANTUM DECOHERENCE.</b> Rolling back...<br>";
+          modalLog.scrollTop = modalLog.scrollHeight;
+          playHarshError();
+
+          setTimeout(() => {
+            // Roll back to 22%!
+            modalProgress.style.width = "22%";
+            modalPhaseTitle.textContent = "Stage 3: Manual CAPTCHA Required to verify humanity!";
+            showCaptcha();
+          }, 1800);
+          return;
+        }
+
+        modalProgress.style.width = `${Math.min(99, progress)}%`;
+      }, 200);
+    }
+
+    // --- CAPTCHA Puzzle (Phase 3) ---
+    function showCaptcha() {
+      captchaSection.style.display = "block";
+      const questions = [
+        {
+          q: "Prove you are human: What is the emotional weight of Zero?",
+          options: ["Heavy", "42 grams", "Infinite Void", "Empty"],
+          correct: 2
+        },
+        {
+          q: "Solve: If 2 + 2 = 4, why are you doing this on a Saturday?",
+          options: ["Curiosity", "Self-hatred", "Boredom", "Accident"],
+          correct: 1
+        },
+        {
+          q: "Select the option that does NOT contain a hidden fee:",
+          options: ["Option A ($)", "Option B (Free*)", "Neither", "Both"],
+          correct: 2
+        }
+      ];
+
+      const chosen = questions[Math.floor(Math.random() * questions.length)];
+      captchaQuestion.textContent = chosen.q;
+      captchaOptions.innerHTML = "";
+
+      chosen.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.style.padding = "6px 12px";
+        btn.style.cursor = "pointer";
+        btn.style.fontFamily = "Tahoma";
+        btn.onclick = () => {
+          if (idx === chosen.correct) {
+            playSuccessChime();
+            captchaSection.style.display = "none";
+            modalLog.innerHTML += "> Humanity verified with low confidence.<br>";
+            modalProgress.style.width = "100%";
+            setTimeout(revealAndRedactResult, 1000);
+          } else {
+            playHarshError();
+            alert("INCORRECT! Your answer lacked emotional depth. Try again.");
+          }
+        };
+        captchaOptions.appendChild(btn);
+      });
+    }
+
+    // --- Reveal for 0.6s & Then Redact Behind Ad Wait ---
+    function revealAndRedactResult() {
+      const val2 = parseFloat(currentInput);
+      let res = 0;
+      if (pendingOp === "+") res = storedValue + val2;
+      else if (pendingOp === "-") res = storedValue - val2;
+      else if (pendingOp === "*") res = storedValue * val2;
+      else if (pendingOp === "/") res = val2 === 0 ? "DIV BY 0 = ∞" : storedValue / val2;
+      else if (pendingOp === "%") res = storedValue % val2;
+      else res = val2;
+
+      // Sometimes add +1 randomly for chaos
+      if (Math.random() < 0.25 && typeof res === "number") {
+        res += 1;
+      }
+
+      currentInput = res.toString();
+      isCalculated = true;
+      equalsEscapes = 0; // reset runaway equals
+
+      // Hide modal temporarily to flash the answer
+      calcModal.style.display = "none";
+      displayMain.textContent = currentInput;
+      displayFormula.textContent = "RESULT COMPUTED! MEMORIZE IT NOW!";
+      playSuccessChime();
+
+      // Flash on screen for exactly 0.6 seconds, then REDACT!
+      setTimeout(() => {
+        displayMain.textContent = "███████";
+        displayFormula.textContent = "🔒 RESULT REDACTED. MUST WATCH SPONSOR BREAK.";
+        playHarshError();
+
+        // Show paywall/ad timer modal
+        calcModal.style.display = "flex";
+        modalPhaseTitle.textContent = "Stage 5: Sponsor Engagement Verification";
+        revealSection.style.display = "block";
+
+        let countdown = 10;
+        adTimer.textContent = countdown;
+        claimResultBtn.disabled = true;
+        claimResultBtn.textContent = `Please wait ${countdown}s...`;
+
+        const adInterval = setInterval(() => {
+          countdown--;
+          adTimer.textContent = countdown;
+          claimResultBtn.textContent = `Please wait ${countdown}s...`;
+          playTicking();
+
+          if (countdown <= 0) {
+            clearInterval(adInterval);
+            claimResultBtn.disabled = false;
+            claimResultBtn.style.cursor = "pointer";
+            claimResultBtn.style.background = "#00ff66";
+            claimResultBtn.textContent = "🔓 REVEAL MY RESULT (FINALLY)";
+          }
+        }, 1000);
+
+        claimResultBtn.onclick = () => {
+          calcModal.style.display = "none";
+          displayMain.textContent = currentInput;
+          displayFormula.textContent = "CALCULATION COMPLETE. WERE YOU ENLIGHTENED?";
+          playSuccessChime();
+        };
+      }, 600);
+    }
+  </script>
+</body>
+</html>
