@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CALC-U-TORTURE 3000 (v0.0.1-alpha)</title>
+  <title>CALC-U-TORTURE 3000 (v6.6.6 Maximum Suffering Edition)</title>
   <style>
     :root {
-      --bg-toxic: #fff700;
-      --neon-pink: #ff007f;
-      --ugly-green: #00ff66;
-      --retro-blue: #000080;
-      --bruise-purple: #4b0082;
-      --font-terrible: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive;
+      --toxic-yellow: #fffb00;
+      --eye-bleed-pink: #ff0055;
+      --screaming-cyan: #00ffff;
+      --vomit-green: #39ff14;
     }
 
     * {
@@ -22,22 +20,52 @@
 
     body {
       margin: 0;
-      padding: 20px;
-      background: repeating-linear-gradient(
-        45deg,
-        #ffee00,
-        #ffee00 20px,
-        #ff0055 20px,
-        #ff0055 40px
+      padding: 15px;
+      background: repeating-radial-gradient(
+        circle,
+        #ff007f,
+        #ff007f 15px,
+        #ffff00 15px,
+        #ffff00 30px,
+        #00ffff 30px,
+        #00ffff 45px
       );
-      font-family: var(--font-terrible);
+      font-family: "Comic Sans MS", "Chalkboard SE", "Papyrus", cursive;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       overflow-x: hidden;
-      cursor: wait;
+      cursor: none; /* Hide real cursor to force interaction with decoy cursors! */
+    }
+
+    /* Trailing Decoy Cursors */
+    .fake-cursor {
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' stroke='%23fff' stroke-width='2' d='M5.5 3.21V20.8l4.4-4.4h6.6L5.5 3.21z'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999999;
+      transition: transform 0.04s linear;
+    }
+
+    #cursor-real { z-index: 1000000; filter: drop-shadow(0 0 4px red); }
+    #cursor-decoy1 { opacity: 0.85; filter: hue-rotate(90deg); }
+    #cursor-decoy2 { opacity: 0.7; filter: hue-rotate(180deg); }
+    #cursor-decoy3 { opacity: 0.6; filter: hue-rotate(270deg); }
+
+    /* The Annoying Screen Fly */
+    #housefly {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      font-size: 22px;
+      z-index: 50;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: top 0.4s ease-out, left 0.4s ease-out, transform 0.1s;
     }
 
     /* Screen Crack Overlay */
@@ -45,174 +73,206 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      background: radial-gradient(circle at 70% 30%, transparent 60%, rgba(255,255,255,0.4) 62%, transparent 63%),
-                  linear-gradient(135deg, transparent 48%, rgba(255,255,255,0.5) 49%, transparent 51%);
+      background: radial-gradient(circle at 65% 35%, transparent 55%, rgba(255,255,255,0.45) 57%, transparent 58%),
+                  linear-gradient(130deg, transparent 48%, rgba(255,255,255,0.5) 49.5%, transparent 51%);
       z-index: 9999;
-      opacity: 0.6;
+      opacity: 0.7;
     }
 
-    /* Top Marquee */
-    .ticker {
+    /* Flashing Eyestrain Ticker */
+    .marquee-container {
       width: 100%;
-      max-width: 600px;
+      max-width: 520px;
       background: #000;
-      color: #00ff00;
+      border: 4px dashed #ff00ff;
       padding: 6px;
-      font-family: monospace;
-      font-size: 14px;
-      border: 3px double #ff00ff;
-      margin-bottom: 12px;
-      overflow: hidden;
-      white-space: nowrap;
+      margin-bottom: 8px;
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
     }
 
-    /* App Container */
+    .marquee-text {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      font-size: 13px;
+      color: #00ff66;
+      white-space: nowrap;
+      animation: marquee 11s linear infinite;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* The Main Frame (Subtly wobbles constantly) */
     .calculator-frame {
       width: 100%;
-      max-width: 480px;
-      background: #c0c0c0;
-      border: 5px outset #ffffff;
-      box-shadow: 15px 15px 0px rgba(0, 0, 0, 0.7);
-      padding: 14px;
+      max-width: 500px;
+      background: #c3c7cb;
+      border: 6px ridge #ffffff;
+      box-shadow: 20px 20px 0px rgba(0, 0, 0, 0.85);
+      padding: 16px;
       position: relative;
-      animation: subtle-wobble 14s infinite ease-in-out;
+      animation: sea-sickness 6s infinite ease-in-out;
     }
 
-    @keyframes subtle-wobble {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(0.4deg); }
-      75% { transform: rotate(-0.4deg); }
+    @keyframes sea-sickness {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      33% { transform: rotate(1.2deg) scale(1.008); }
+      66% { transform: rotate(-1.2deg) scale(0.995); }
     }
 
+    /* Window Header */
     .header-bar {
-      background: linear-gradient(90deg, #000080, #1084d0);
-      color: white;
-      padding: 4px 8px;
-      font-weight: bold;
+      background: linear-gradient(90deg, #800000, #ff0000, #ff8800);
+      color: yellow;
+      padding: 6px 10px;
+      font-weight: 900;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       font-size: 13px;
+      text-shadow: 1px 1px 0 #000;
     }
 
-    .window-btns span {
-      background: #c0c0c0;
-      color: black;
-      border: 1px outset white;
-      padding: 1px 5px;
-      font-size: 10px;
-      margin-left: 2px;
-      cursor: not-allowed;
-    }
-
-    /* Regret HUD */
+    /* HUD */
     .hud {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px;
-      background: #222;
-      color: #ff3333;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      background: #111;
+      color: #ff4444;
       padding: 6px;
       font-family: monospace;
-      font-size: 11px;
-      border: 2px inset #555;
-      margin-bottom: 10px;
+      font-size: 10px;
+      border: 3px inset #666;
+      margin-bottom: 8px;
     }
 
-    .hud-item {
-      text-align: center;
-    }
+    .hud-item { text-align: center; }
     .hud-val {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       color: #00ffcc;
     }
 
-    /* Display */
+    /* Solar Warning Banner */
+    .solar-bar {
+      background: #ffcc00;
+      color: #000;
+      font-size: 10px;
+      font-weight: bold;
+      text-align: center;
+      padding: 3px;
+      margin-bottom: 8px;
+      border: 1px solid black;
+    }
+
+    /* LCD Screen with glare */
     .display-box {
-      background: #99af8a;
-      border: 4px inset #555;
-      padding: 10px;
-      min-height: 80px;
+      background: #8b9c79;
+      border: 5px inset #444;
+      padding: 8px 12px;
+      min-height: 90px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: inset 2px 2px 8px rgba(0,0,0,0.6);
+      box-shadow: inset 3px 3px 10px rgba(0,0,0,0.8);
       position: relative;
       overflow: hidden;
       margin-bottom: 12px;
     }
 
+    .display-glare {
+      position: absolute;
+      top: -30px;
+      left: -30px;
+      width: 170px;
+      height: 170px;
+      background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 60%);
+      pointer-events: none;
+      transition: transform 0.1s linear;
+    }
+
     .display-subtext {
-      font-size: 12px;
+      font-size: 11px;
       font-family: monospace;
-      color: #384232;
+      color: #27331f;
       text-align: right;
       height: 16px;
+      font-weight: bold;
       overflow: hidden;
     }
 
     .display-main {
-      font-size: 32px;
+      font-size: 34px;
       font-family: "Courier New", monospace;
-      font-weight: bold;
-      color: #1a2217;
+      font-weight: 900;
+      color: #0e160a;
       text-align: right;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       word-break: break-all;
     }
 
-    .display-glare {
-      position: absolute;
-      top: -20px;
-      left: -20px;
-      width: 150px;
-      height: 150px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%);
-      pointer-events: none;
-    }
-
-    /* Keypad Grid */
+    /* Keypad Grid: Every button has a mismatched, terrible font & color! */
     .keypad-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 7px;
+      position: relative;
     }
 
-    /* Hold-to-Click Button Styling */
     .calc-btn {
       position: relative;
-      height: 58px;
-      background: #dfdfdf;
+      height: 60px;
       border: 3px outset #ffffff;
-      font-family: var(--font-terrible);
-      font-size: 18px;
+      font-size: 17px;
       font-weight: bold;
-      cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      outline: none;
-      transition: transform 0.05s;
       overflow: hidden;
+      transition: transform 0.08s;
+      outline: none;
     }
 
     .calc-btn:active {
-      border: 3px inset #777;
+      border-style: inset;
+      transform: scale(0.96);
     }
+
+    /* Individual Button Crimes (Mismatched visual chaos) */
+    .btn-b1 { font-family: "Papyrus", fantasy; background: #ffaaaa; color: #660000; }
+    .btn-b2 { font-family: "Impact", fantasy; background: #aaffaa; color: #004400; font-size: 14px; }
+    .btn-b3 { font-family: "Brush Script MT", cursive; background: #aaaaff; color: #000066; font-size: 20px; }
+    .btn-b4 { font-family: "Courier New", monospace; background: #ffffaa; color: #884400; }
+    .btn-b5 { font-family: "Comic Sans MS", cursive; background: #ffaaff; color: #550055; }
+    .btn-b6 { font-family: "Trebuchet MS", sans-serif; background: #aaffff; color: #005555; }
+    .btn-b7 { font-family: "Times New Roman", serif; background: #ffd4aa; color: #663300; font-style: italic; }
+    .btn-b8 { font-family: "Arial Black", sans-serif; background: #d4aaff; color: #330066; }
+    .btn-b9 { font-family: "Lucida Console", monospace; background: #aaffd4; color: #004422; }
+    .btn-b10 { font-family: "Georgia", serif; background: #ffe4e1; color: #4a0000; }
+    .btn-b11 { font-family: "Garamond", serif; background: #e6e6fa; color: #191970; }
+    .btn-b12 { font-family: "Copperplate", fantasy; background: #fffacd; color: #8b8000; }
+    .btn-b13 { font-family: "Verdana", sans-serif; background: #f0fff0; color: #006400; }
+    .btn-b14 { font-family: "Palatino", serif; background: #fdf5e6; color: #8b4513; }
+    .btn-b15 { font-family: "Tahoma", sans-serif; background: #f5f5dc; color: #2f4f4f; }
+    .btn-b16 { font-family: "Wingdings", sans-serif; background: #ffe4b5; color: #800000; }
 
     .btn-label {
       position: relative;
       z-index: 2;
+      pointer-events: none;
     }
 
     .btn-sub-hint {
-      font-size: 8px;
-      color: #666;
-      font-family: sans-serif;
+      font-size: 7.5px;
+      color: #444;
+      font-family: Arial, sans-serif;
       margin-top: 1px;
+      pointer-events: none;
     }
 
     /* Hold meter progress bar inside button */
@@ -222,65 +282,67 @@
       left: 0;
       height: 100%;
       width: 0%;
-      background: rgba(255, 0, 102, 0.4);
+      background: rgba(255, 0, 90, 0.45);
       z-index: 1;
       pointer-events: none;
-      transition: width 0.05s linear;
+      transition: width 0.04s linear;
     }
 
-    .btn-op {
-      background: #ffd699;
-    }
-    .btn-clear {
-      background: #ff9999;
-      color: #660000;
-    }
-
-    /* Fleeing Equals Button */
+    /* Runaway Equals Button */
     #btn-equals {
-      background: #66ff66;
-      border-color: #00aa00;
-      font-size: 24px;
+      background: #00ff66 !important;
+      border-color: #008800;
+      font-size: 26px;
+      font-family: 'Impact', sans-serif;
+      color: #000;
       transition: top 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28), left 0.2s ease;
     }
 
-    /* Calcy Assistant */
+    /* Calcy The Intrusive Paperclip */
     .calcy-bubble {
       position: fixed;
-      bottom: 20px;
-      right: 25px;
-      background: #ffffe1;
-      border: 2px solid black;
-      border-radius: 12px;
-      padding: 12px 14px;
-      max-width: 250px;
-      font-size: 13px;
-      box-shadow: 4px 4px 0px rgba(0,0,0,0.8);
-      z-index: 1000;
-      animation: bounce 3s infinite alternate ease-in-out;
+      bottom: 15px;
+      right: 20px;
+      background: #ffffc2;
+      border: 3px solid black;
+      border-radius: 14px;
+      padding: 12px;
+      max-width: 270px;
+      font-size: 12px;
+      box-shadow: 6px 6px 0px rgba(0,0,0,0.9);
+      z-index: 99990;
+      animation: float-clip 2.5s infinite alternate ease-in-out;
     }
 
-    .calcy-bubble::after {
-      content: "";
+    @keyframes float-clip {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+
+    /* Floating Obstacle Sticky Note (Blocks Keypad Clicks!) */
+    .blocker-note {
       position: absolute;
-      bottom: -10px;
-      right: 35px;
-      border-width: 10px 10px 0;
-      border-style: solid;
-      border-color: #ffffe1 transparent;
-      display: block;
-      width: 0;
+      background: #fffd75;
+      border: 2px solid #333;
+      box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+      padding: 10px 14px;
+      z-index: 30;
+      font-size: 11px;
+      font-family: "Comic Sans MS", cursive;
+      max-width: 200px;
+      transform: rotate(-3deg);
     }
 
-    .calcy-avatar {
-      font-size: 28px;
-      display: inline-block;
-      margin-right: 6px;
-    }
-
-    @keyframes bounce {
-      0% { transform: translateY(0px); }
-      100% { transform: translateY(-8px); }
+    .blocker-close {
+      position: absolute;
+      top: 2px;
+      right: 4px;
+      background: red;
+      color: white;
+      font-size: 8px;
+      padding: 1px 4px;
+      cursor: pointer;
+      font-weight: bold;
     }
 
     /* Modal / Bureaucracy Overlay */
@@ -288,8 +350,8 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 10000;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 100000;
       align-items: center;
       justify-content: center;
       padding: 15px;
@@ -297,116 +359,127 @@
 
     .modal-card {
       background: #ece9d8;
-      border: 4px outset #fff;
-      max-width: 440px;
+      border: 5px outset #fff;
+      max-width: 460px;
       width: 100%;
       padding: 18px;
-      box-shadow: 10px 10px 25px rgba(0,0,0,0.9);
+      box-shadow: 12px 12px 30px rgba(0,0,0,0.95);
       font-family: "Tahoma", sans-serif;
     }
 
     .progress-track {
       background: #fff;
       border: 2px inset #666;
-      height: 26px;
+      height: 28px;
       width: 100%;
-      position: relative;
-      margin: 15px 0;
+      margin: 14px 0;
       overflow: hidden;
     }
 
     .progress-fill {
       background: repeating-linear-gradient(
         -45deg,
-        #0055ff,
-        #0055ff 10px,
-        #3388ff 10px,
-        #3388ff 20px
+        #ff0033,
+        #ff0033 10px,
+        #ff6600 10px,
+        #ff6600 20px
       );
       height: 100%;
       width: 0%;
-      transition: width 0.3s ease;
+      transition: width 0.2s ease;
     }
 
     .modal-log {
       font-family: monospace;
       font-size: 11px;
       background: #000;
-      color: #00ff44;
+      color: #00ff66;
       padding: 8px;
-      height: 70px;
+      height: 85px;
       overflow-y: auto;
       margin-bottom: 12px;
       border: 2px inset #444;
     }
 
-    /* Redacted Paywall Flash */
     .paywall-stamp {
       background: red;
       color: yellow;
       font-weight: 900;
       font-size: 16px;
-      padding: 5px;
+      padding: 6px;
       border: 3px dashed black;
       transform: rotate(-3deg);
       text-align: center;
       margin: 10px 0;
-      animation: strobe 0.3s infinite;
+      animation: strobe 0.25s infinite;
     }
 
     @keyframes strobe {
       0% { opacity: 1; }
-      50% { opacity: 0.6; }
+      50% { opacity: 0.5; }
       100% { opacity: 1; }
     }
 
     .ad-countdown {
-      font-size: 24px;
-      font-weight: bold;
+      font-size: 26px;
+      font-weight: 900;
       color: #b30000;
       text-align: center;
       margin: 10px 0;
+      font-family: monospace;
     }
 
-    /* Responsive */
-    @media (max-width: 450px) {
-      .calculator-frame {
-        padding: 8px;
-      }
-      .calc-btn {
-        height: 50px;
-        font-size: 15px;
-      }
-      .calcy-bubble {
-        display: none;
-      }
+    /* Operator Confirmation Dialog */
+    #opConfirmModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(120, 0, 0, 0.7);
+      z-index: 100001;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .op-dialog-card {
+      background: #ffffcc;
+      border: 4px solid red;
+      padding: 16px;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 8px 8px 0 black;
     }
   </style>
 </head>
 <body>
 
+  <!-- Trailing Decoy Cursors (Guaranteed to disorient) -->
+  <div class="fake-cursor" id="cursor-real"></div>
+  <div class="fake-cursor" id="cursor-decoy1"></div>
+  <div class="fake-cursor" id="cursor-decoy2"></div>
+  <div class="fake-cursor" id="cursor-decoy3"></div>
+
   <div class="screen-crack"></div>
 
-  <!-- Obnoxious Ticker -->
-  <div class="ticker">
-    🚨 WARNING: PRESS & HOLD KEYS FOR 1.8 SECONDS • RESULTS SUBJECT TO QUANTUM CORRUPTION • DO NOT REFRESH OR ALL DATA WILL BE FORFEITED • CALC-U-TORTURE ENTERPRISE v0.0.1 🚨
+  <!-- Obnoxious Marquee -->
+  <div class="marquee-container">
+    <div class="marquee-text">
+      ☠️ MAXIMUM TORTURE v6.6.6 • HOLD ALL KEYS 1.8s • DO NOT TOUCH THE FLY • OPERATOR CONSENT REQUIRED • CALCULATING IS AT YOUR OWN RISK ☠️
+    </div>
   </div>
 
   <div class="calculator-frame" id="calcFrame">
     <!-- Retro Title Bar -->
     <div class="header-bar">
-      <span>🖩 Calc-U-Torture Pro (Unregistered Trial: Day 4,129)</span>
-      <div class="window-btns">
-        <span>?</span>
-        <span>_</span>
-        <span>X</span>
+      <span>💀 Calc-U-Torture (Maximum Irritation Edition)</span>
+      <div>
+        <button style="font-size:9px;" onclick="triggerChaosSpasm()">🔥 CHAOS</button>
       </div>
     </div>
 
-    <!-- Regret & Patience HUD -->
+    <!-- Regret & Vitals HUD -->
     <div class="hud">
       <div class="hud-item">
-        <div>TIME WASTED</div>
+        <div>SECONDS WASTED</div>
         <div class="hud-val" id="timeWasted">0s</div>
       </div>
       <div class="hud-item">
@@ -414,128 +487,146 @@
         <div class="hud-val" id="patienceLevel">100%</div>
       </div>
       <div class="hud-item">
-        <div>RAGE INDEX</div>
-        <div class="hud-val" id="rageIndex">LOW</div>
+        <div>BLOOD PRESSURE</div>
+        <div class="hud-val" id="bpValue">120/80</div>
+      </div>
+      <div class="hud-item">
+        <div>RAGE STATUS</div>
+        <div class="hud-val" id="rageIndex">SIMMERING</div>
       </div>
     </div>
 
-    <!-- Display -->
-    <div class="display-box">
-      <div class="display-glare"></div>
-      <div class="display-subtext" id="displayFormula">READY FOR SUFFERING</div>
+    <!-- Solar Sensor Warning -->
+    <div class="solar-bar" id="solarBar">
+      ☀️ SOLAR POWER LEVEL: 98% (Keep mouse moving to recharge cells)
+    </div>
+
+    <!-- LCD Display -->
+    <div class="display-box" id="displayBox">
+      <!-- That annoying bug crawling on the numbers! -->
+      <div id="housefly" title="Shoo!">🪰</div>
+      <div class="display-glare" id="glare"></div>
+      <div class="display-subtext" id="displayFormula">READY TO RUIN YOUR DAY</div>
       <div class="display-main" id="displayMain">0</div>
     </div>
 
-    <!-- Keypad Grid -->
+    <!-- Keypad Grid (With Mismatched Ugly Buttons) -->
     <div class="keypad-grid" id="keypad">
+      <!-- Active blocker sticky note that spawns and covers buttons -->
+      <div class="blocker-note" id="blockerNote" style="top: 25px; left: 40px;">
+        <span class="blocker-close" onclick="dismissBlocker()">X</span>
+        💡 <b>Calc-y Advice:</b><br>
+        Remember to take deep breaths while waiting 1.8s per key!
+      </div>
+
       <!-- Row 1 -->
-      <button class="calc-btn btn-clear" data-val="C">
+      <button class="calc-btn btn-b1" data-val="C">
         <span class="btn-label">C</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn" data-val="RANDOM_DROP">
-        <span class="btn-label">⌫</span>
-        <span class="btn-sub-hint">Deletes Random</span>
+      <button class="calc-btn btn-b2" data-val="RANDOM_DROP">
+        <span class="btn-label">⌫ RANDOM</span>
+        <span class="btn-sub-hint">Vaporizes Digit</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn btn-op" data-val="%">
+      <button class="calc-btn btn-b3" data-val="%">
         <span class="btn-label">mod</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn btn-op" data-val="/">
+      <button class="calc-btn btn-b4" data-val="/">
         <span class="btn-label">÷</span>
-        <span class="btn-sub-hint">Hold 1.8s</span>
+        <span class="btn-sub-hint">Requires Consent</span>
         <div class="btn-progress"></div>
       </button>
 
       <!-- Row 2 -->
-      <button class="calc-btn" data-val="7">
+      <button class="calc-btn btn-b5" data-val="7">
         <span class="btn-label">7</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn" data-val="8">
+      <button class="calc-btn btn-b6" data-val="8">
         <span class="btn-label">8</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn" data-val="9">
+      <button class="calc-btn btn-b7" data-val="9">
         <span class="btn-label">9</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn btn-op" data-val="*">
+      <button class="calc-btn btn-b8" data-val="*">
         <span class="btn-label">×</span>
-        <span class="btn-sub-hint">Hold 1.8s</span>
+        <span class="btn-sub-hint">Requires Consent</span>
         <div class="btn-progress"></div>
       </button>
 
       <!-- Row 3 -->
-      <button class="calc-btn" data-val="4">
+      <button class="calc-btn btn-b9" data-val="4">
         <span class="btn-label">4</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn" data-val="5">
+      <button class="calc-btn btn-b10" data-val="5">
         <span class="btn-label">5</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn" data-val="6">
+      <button class="calc-btn btn-b11" data-val="6">
         <span class="btn-label">6</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn btn-op" data-val="-">
+      <button class="calc-btn btn-b12" data-val="-">
         <span class="btn-label">-</span>
-        <span class="btn-sub-hint">Hold 1.8s</span>
+        <span class="btn-sub-hint">Requires Consent</span>
         <div class="btn-progress"></div>
       </button>
 
       <!-- Row 4 -->
-      <button class="calc-btn" data-val="1">
+      <button class="calc-btn btn-b13" data-val="1">
         <span class="btn-label">1</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn" data-val="2">
+      <button class="calc-btn btn-b14" data-val="2">
         <span class="btn-label">2</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn" data-val="3">
+      <button class="calc-btn btn-b15" data-val="3">
         <span class="btn-label">3</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn btn-op" data-val="+">
+      <button class="calc-btn btn-b16" data-val="+">
         <span class="btn-label">+</span>
-        <span class="btn-sub-hint">Hold 1.8s</span>
+        <span class="btn-sub-hint">Requires Consent</span>
         <div class="btn-progress"></div>
       </button>
 
       <!-- Row 5 -->
-      <button class="calc-btn" data-val="0">
+      <button class="calc-btn btn-b2" data-val="0">
         <span class="btn-label">0</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn" data-val=".">
+      <button class="calc-btn btn-b4" data-val=".">
         <span class="btn-label">.</span>
         <span class="btn-sub-hint">Hold 1.8s</span>
         <div class="btn-progress"></div>
       </button>
-      <button class="calc-btn" data-val="SURPRISE">
-        <span class="btn-label">❓</span>
-        <span class="btn-sub-hint">Chaos</span>
+      <button class="calc-btn btn-b7" data-val="SURPRISE">
+        <span class="btn-label">🎲 ROULETTE</span>
+        <span class="btn-sub-hint">Random Chaos</span>
         <div class="btn-progress"></div>
       </button>
-      <!-- The Infamous Runaway Equals Button -->
+      <!-- The Apex Fleeing Button -->
       <button class="calc-btn" id="btn-equals" data-val="=">
         <span class="btn-label">=</span>
-        <span class="btn-sub-hint">Runaway</span>
+        <span class="btn-sub-hint">Catch Me!</span>
         <div class="btn-progress"></div>
       </button>
     </div>
@@ -543,28 +634,45 @@
 
   <!-- Calcy Assistant -->
   <div class="calcy-bubble" id="calcy">
-    <span class="calcy-avatar">📎</span>
-    <span id="calcyText">"Hi! I'm Calc-y! It looks like you're trying to calculate something basic. Would you like me to make it much harder?"</span>
+    <span style="font-size:26px;">📎</span>
+    <span id="calcyText">"I noticed your pulse is elevated. Would you like me to delete your input so you can calm down?"</span>
   </div>
 
-  <!-- Bureaucracy Modal Window -->
+  <!-- Operator Consent Modal -->
+  <div id="opConfirmModal">
+    <div class="op-dialog-card">
+      <h3 style="color:red; margin-top:0;">⚠️ PSYCHOLOGICAL CONSENT REQUIRED</h3>
+      <p style="font-size:12px;" id="opConfirmText">
+        Are you mentally prepared to execute mathematical addition?
+      </p>
+      <div style="display:flex; justify-content:space-around; margin-top:14px;">
+        <button id="opProceedBtn" style="padding:6px 14px; font-weight:bold; cursor:pointer;">
+          I Accept the Risk
+        </button>
+        <button onclick="rejectOperator()" style="padding:6px 14px; cursor:pointer;">
+          Abandon Math
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bureaucratic Calculation Modal -->
   <div class="modal-overlay" id="calcModal">
     <div class="modal-card">
-      <div style="font-weight: bold; border-bottom: 2px solid #999; padding-bottom: 5px; margin-bottom: 10px;">
-        ⚙️ Quantum Calculation Protocol in Progress...
+      <div style="font-weight: 900; border-bottom: 2px solid #888; padding-bottom: 5px; margin-bottom: 10px;">
+        ⚙️ Quantum Bureaucratic Calculation Pipeline
       </div>
       <div id="modalPhaseTitle" style="font-size: 13px; font-weight: bold; margin-bottom: 4px;">
-        Contacting Offshore Math Server (Phase 1 of 5)...
+        Phase 1: Authenticating Mathematical Proof...
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="modalProgress"></div>
       </div>
       <div class="modal-log" id="modalLog">
-        > Booting virtual abacus...<br>
-        > Checking user math credentials...
+        > Querying offshore abacus cluster...<br>
       </div>
 
-      <!-- Human Verification Puzzle (Step 4) -->
+      <!-- Human Verification Puzzle (Phase 3) -->
       <div id="captchaSection" style="display: none; background: #fff; border: 2px dashed red; padding: 10px; margin: 10px 0;">
         <div style="font-weight: bold; color: red; font-size: 12px; margin-bottom: 6px;">
           🤖 HUMAN PATIENCE VERIFICATION:
@@ -579,18 +687,18 @@
       <div id="revealSection" style="display: none;">
         <div class="paywall-stamp">🔒 PREVIEW EXPIRED! RESULT REDACTED</div>
         <p style="font-size: 12px; text-align: center; margin: 0;">
-          To view your mathematical result, please endure this mandatory 10-second sponsor break.
+          To view your mathematical result, you must endure this mandatory sponsor cooldown.
         </p>
         <div class="ad-countdown" id="adTimer">10</div>
-        <button id="claimResultBtn" disabled style="width: 100%; padding: 8px; font-weight: bold; cursor: not-allowed;">
-          Please wait for countdown...
+        <button id="claimResultBtn" disabled style="width: 100%; padding: 10px; font-weight: bold; cursor: not-allowed;">
+          Please wait for cooldown...
         </button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- Audio Synthesizer (Zero external dependencies) ---
+    // --- Audio Warfare (Web Audio API Synthesizer) ---
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
 
@@ -614,20 +722,95 @@
       } catch (e) {}
     }
 
+    // Obnoxious Mosquito Sound when holding
+    let mosquitoOsc = null;
+    let mosquitoGain = null;
+    function startMosquitoDrone() {
+      try {
+        initAudio();
+        mosquitoOsc = audioCtx.createOscillator();
+        mosquitoGain = audioCtx.createGain();
+        mosquitoOsc.type = 'sawtooth';
+        mosquitoOsc.frequency.setValueAtTime(3800, audioCtx.currentTime); // 3.8kHz annoying mosquito buzz
+        mosquitoGain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        mosquitoOsc.connect(mosquitoGain);
+        mosquitoGain.connect(audioCtx.destination);
+        mosquitoOsc.start();
+      } catch(e) {}
+    }
+
+    function stopMosquitoDrone() {
+      try {
+        if (mosquitoOsc) {
+          mosquitoOsc.stop();
+          mosquitoOsc.disconnect();
+          mosquitoOsc = null;
+        }
+      } catch(e) {}
+    }
+
     function playHarshError() {
-      playBeep(150, 'sawtooth', 0.25, 0.3);
-      setTimeout(() => playBeep(120, 'square', 0.35, 0.3), 120);
+      playBeep(130, 'sawtooth', 0.3, 0.4);
+      setTimeout(() => playBeep(90, 'square', 0.4, 0.4), 100);
     }
 
     function playSuccessChime() {
-      playBeep(523, 'triangle', 0.1, 0.2);
-      setTimeout(() => playBeep(659, 'triangle', 0.1, 0.2), 80);
-      setTimeout(() => playBeep(784, 'triangle', 0.2, 0.2), 160);
+      playBeep(523, 'triangle', 0.09, 0.2);
+      setTimeout(() => playBeep(659, 'triangle', 0.09, 0.2), 70);
+      setTimeout(() => playBeep(784, 'triangle', 0.18, 0.2), 140);
     }
 
-    function playTicking() {
-      playBeep(1200, 'square', 0.02, 0.04);
+    // --- Decoy Cursors (3 decoy cursors lagging behind your mouse) ---
+    const curReal = document.getElementById("cursor-real");
+    const cur1 = document.getElementById("cursor-decoy1");
+    const cur2 = document.getElementById("cursor-decoy2");
+    const cur3 = document.getElementById("cursor-decoy3");
+    const glare = document.getElementById("glare");
+
+    let mouseX = 0, mouseY = 0;
+    let c1x = 0, c1y = 0;
+    let c2x = 0, c2y = 0;
+    let c3x = 0, c3y = 0;
+
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      curReal.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      glare.style.transform = `translate(${mouseX * 0.15}px, ${mouseY * 0.15}px)`;
+    });
+
+    // Animate trailing decoys
+    setInterval(() => {
+      c1x += (mouseX - c1x + 18) * 0.35;
+      c1y += (mouseY - c1y + 12) * 0.35;
+      cur1.style.transform = `translate(${c1x}px, ${c1y}px)`;
+
+      c2x += (mouseX - c2x - 22) * 0.2;
+      c2y += (mouseY - c2y + 24) * 0.2;
+      cur2.style.transform = `translate(${c2x}px, ${c2y}px)`;
+
+      c3x += (mouseX - c3x + 30) * 0.12;
+      c3y += (mouseY - c3y - 18) * 0.12;
+      cur3.style.transform = `translate(${c3x}px, ${c3y}px)`;
+    }, 25);
+
+    // --- The Annoying Crawling Housefly ---
+    const housefly = document.getElementById("housefly");
+    function moveFly() {
+      const top = Math.floor(Math.random() * 50) + 15;
+      const left = Math.floor(Math.random() * 320) + 20;
+      const rot = Math.floor(Math.random() * 360);
+      housefly.style.top = `${top}px`;
+      housefly.style.left = `${left}px`;
+      housefly.style.transform = `rotate(${rot}deg)`;
     }
+    setInterval(moveFly, 3500);
+
+    housefly.addEventListener("click", () => {
+      playBeep(900, "sawtooth", 0.1, 0.2);
+      moveFly();
+      alert("🪰 BZZZ! The fly bit your finger. Focus disrupted.");
+    });
 
     // --- State Variables ---
     let currentInput = "0";
@@ -638,18 +821,22 @@
     let secondsWasted = 0;
     let patience = 100;
     let equalsEscapes = 0;
+    let solarPower = 98;
 
-    const HOLD_TIME_MS = 1800; // 1.8 seconds hold to register a key!
+    const HOLD_TIME_MS = 1800; // 1.8s hold time!
 
     // Elements
     const displayMain = document.getElementById("displayMain");
     const displayFormula = document.getElementById("displayFormula");
     const timeWastedEl = document.getElementById("timeWasted");
     const patienceLevelEl = document.getElementById("patienceLevel");
+    const bpValueEl = document.getElementById("bpValue");
     const rageIndexEl = document.getElementById("rageIndex");
+    const solarBar = document.getElementById("solarBar");
     const calcyText = document.getElementById("calcyText");
     const equalsBtn = document.getElementById("btn-equals");
     const calcFrame = document.getElementById("calcFrame");
+    const blockerNote = document.getElementById("blockerNote");
 
     // Modal elements
     const calcModal = document.getElementById("calcModal");
@@ -663,57 +850,91 @@
     const adTimer = document.getElementById("adTimer");
     const claimResultBtn = document.getElementById("claimResultBtn");
 
-    // --- Timer HUD ---
+    // Operator Confirm Modal
+    const opConfirmModal = document.getElementById("opConfirmModal");
+    const opConfirmText = document.getElementById("opConfirmText");
+    const opProceedBtn = document.getElementById("opProceedBtn");
+
+    // --- HUD Vitals & Solar Drain ---
     setInterval(() => {
       secondsWasted++;
       timeWastedEl.textContent = `${secondsWasted}s`;
 
-      if (secondsWasted > 30 && patience > 40) {
-        patience = Math.max(12, patience - 1);
+      // Blood pressure escalates
+      const sys = 120 + Math.min(80, Math.floor(secondsWasted * 0.9));
+      const dia = 80 + Math.min(50, Math.floor(secondsWasted * 0.5));
+      bpValueEl.textContent = `${sys}/${dia}`;
+
+      if (secondsWasted > 15 && patience > 30) {
+        patience = Math.max(8, patience - 1);
         patienceLevelEl.textContent = `${patience}%`;
       }
-      if (secondsWasted > 45) rageIndexEl.textContent = "HIGH";
-      if (secondsWasted > 90) rageIndexEl.textContent = "LETHAL";
+
+      if (secondsWasted > 30) rageIndexEl.textContent = "BOILING";
+      if (secondsWasted > 60) rageIndexEl.textContent = "STROKE TERRITORY";
+
+      // Drain solar power if mouse doesn't move
+      solarPower = Math.max(10, solarPower - 1);
+      solarBar.textContent = `☀️ SOLAR CELL POWER: ${solarPower}% (Keep mouse moving to recharge)`;
+      if (solarPower < 35) {
+        calcFrame.style.opacity = (solarPower / 100) + 0.3;
+      } else {
+        calcFrame.style.opacity = 1;
+      }
     }, 1000);
 
-    // --- Calcy Passive-Aggressive Commentary ---
-    const calcyInsults = [
-      "\"Are you sure that's the number you wanted? Think carefully.\"",
-      "\"Tip: If you give up now, you save 100% of your remaining brain cells.\"",
-      "\"Studies show 94% of people make a mistake on the very next click.\"",
-      "\"Did you know? In ancient Rome, calculating this was punishable by sighing.\"",
-      "\"I've seen slower math, but it was done by geological tectonic plates.\"",
-      "\"Why add numbers when you could stare out the window in existential dread?\"",
-      "\"Careful! That button looks slippery.\""
+    window.addEventListener("mousemove", () => {
+      solarPower = Math.min(100, solarPower + 1);
+    });
+
+    // --- Obnoxious Blocker Sticky Notes (Spawn over keypad) ---
+    function dismissBlocker() {
+      blockerNote.style.display = "none";
+      playBeep(800, "sine", 0.04);
+      // Re-spawn in a new irritating location in 8 seconds
+      setTimeout(() => {
+        const rndTop = Math.floor(Math.random() * 180) + 20;
+        const rndLeft = Math.floor(Math.random() * 200) + 20;
+        blockerNote.style.top = `${rndTop}px`;
+        blockerNote.style.left = `${rndLeft}px`;
+        blockerNote.style.display = "block";
+      }, 8000);
+    }
+
+    // --- Calcy Sarcastic Advice ---
+    const calcyQuotes = [
+      "\"I see you're using numbers. In ancient Greece, philosophers solved this with sticks.\"",
+      "\"If you close this tab right now, you get all your dignity back.\"",
+      "\"Warning: Repeated calculation has been linked to increased forehead wrinkling.\"",
+      "\"Did you double-check your arithmetic? 78% of users regret their input.\"",
+      "\"Why not do long division on a napkin instead?\"",
+      "\"Oops! That button felt a bit sticky today.\""
     ];
-
     setInterval(() => {
-      const idx = Math.floor(Math.random() * calcyInsults.length);
-      calcyText.textContent = calcyInsults[idx];
-    }, 9000);
+      const q = calcyQuotes[Math.floor(Math.random() * calcyQuotes.length)];
+      calcyText.textContent = q;
+    }, 8500);
 
-    // --- Runaway Equals Button (Flee from Cursor) ---
+    // --- Apex Runaway Equals Button ---
     equalsBtn.addEventListener("mouseover", (e) => {
       if (equalsEscapes < 4) {
         equalsEscapes++;
-        playBeep(600 + equalsEscapes * 100, "sawtooth", 0.05);
+        playBeep(700 + equalsEscapes * 120, "sawtooth", 0.05);
 
-        // Randomly reposition within frame
-        const xOffset = (Math.random() - 0.5) * 160;
-        const yOffset = (Math.random() - 0.5) * 120;
-        equalsBtn.style.transform = `translate(${xOffset}px, ${yOffset}px) scale(${0.85 - equalsEscapes * 0.08})`;
+        const xOffset = (Math.random() - 0.5) * 190;
+        const yOffset = (Math.random() - 0.5) * 140;
+        equalsBtn.style.transform = `translate(${xOffset}px, ${yOffset}px) scale(${0.8 - equalsEscapes * 0.07})`;
 
-        displayFormula.textContent = `🚨 EQUALS BUTTON HAS FLED! (${4 - equalsEscapes} dodges left)`;
-        patience = Math.max(5, patience - 4);
+        displayFormula.textContent = `🚨 EQUALS SPRINTED AWAY! (${4 - equalsEscapes} dodges remaining)`;
+        patience = Math.max(3, patience - 4);
         patienceLevelEl.textContent = `${patience}%`;
       } else {
-        // Finally allow them to hover
         equalsBtn.style.transform = "none";
-        displayFormula.textContent = "Equals cornered! Quick, hold it down!";
+        displayFormula.textContent = "Cornered! Hold it for 1.8s before it escapes!";
       }
     });
 
-    // --- Agonizing Hold-To-Press Handler ---
+    // --- Agonizing Hold-To-Press Handler with Mosquito Drone ---
     let holdTimer = null;
     let holdProgressInterval = null;
     let holdStartTime = 0;
@@ -727,18 +948,18 @@
         initAudio();
         activeBtn = btn;
         holdStartTime = Date.now();
-        playBeep(300, "sine", 0.05);
+        startMosquitoDrone();
 
-        // Animate fill progress
         holdProgressInterval = setInterval(() => {
           const elapsed = Date.now() - holdStartTime;
           const pct = Math.min(100, (elapsed / HOLD_TIME_MS) * 100);
           if (progressEl) progressEl.style.width = `${pct}%`;
-          playTicking();
+          playBeep(1400, "square", 0.02, 0.02);
         }, 50);
 
         holdTimer = setTimeout(() => {
           clearInterval(holdProgressInterval);
+          stopMosquitoDrone();
           if (progressEl) progressEl.style.width = "0%";
           playSuccessChime();
           const val = btn.getAttribute("data-val");
@@ -751,10 +972,11 @@
         if (activeBtn === btn && holdTimer) {
           clearTimeout(holdTimer);
           clearInterval(holdProgressInterval);
+          stopMosquitoDrone();
           if (progressEl) progressEl.style.width = "0%";
           playHarshError();
 
-          displayFormula.textContent = "❌ RELEASED TOO EARLY! KEY DISCARDED.";
+          displayFormula.textContent = "❌ RELEASED PREMATURELY! KEY INPUT TRASHED.";
           patience = Math.max(1, patience - 3);
           patienceLevelEl.textContent = `${patience}%`;
           activeBtn = null;
@@ -765,13 +987,12 @@
       btn.addEventListener("mouseup", cancelHold);
       btn.addEventListener("mouseleave", cancelHold);
 
-      // Mobile touch support
       btn.addEventListener("touchstart", startHold);
       btn.addEventListener("touchend", cancelHold);
       btn.addEventListener("touchcancel", cancelHold);
     });
 
-    // --- Calculator Actions ---
+    // --- Button Actions ---
     function handleButtonAction(val) {
       if (!val) return;
 
@@ -783,7 +1004,7 @@
           currentInput += val;
         }
         displayMain.textContent = currentInput;
-        displayFormula.textContent = `INPUT DIGIT: ${val}`;
+        displayFormula.textContent = `DIGIT ENTERED: ${val}`;
         scrambleRandomKey();
       } else if (val === ".") {
         if (!currentInput.includes(".")) {
@@ -795,38 +1016,65 @@
         pendingOp = null;
         storedValue = null;
         displayMain.textContent = "0";
-        displayFormula.textContent = "ALL MEMORY PURGED (SORRY)";
+        displayFormula.textContent = "ALL MEMORY PURGED (SORRY NOT SORRY)";
       } else if (val === "RANDOM_DROP") {
-        // Deletes a random character, not the last one
+        // Vaporizes a random character
         if (currentInput.length > 1) {
           const dropIdx = Math.floor(Math.random() * currentInput.length);
           currentInput = currentInput.slice(0, dropIdx) + currentInput.slice(dropIdx + 1);
           displayMain.textContent = currentInput;
-          displayFormula.textContent = `DELETED DIGIT AT POSITION #${dropIdx + 1} (NOT THE LAST ONE)`;
+          displayFormula.textContent = `💥 VAPORIZED DIGIT AT INDEX #${dropIdx + 1}!`;
         } else {
           currentInput = "0";
           displayMain.textContent = "0";
         }
       } else if (val === "SURPRISE") {
-        // Inverts display or swaps values
         currentInput = (parseFloat(currentInput) * (Math.random() > 0.5 ? -1 : 42)).toString();
         displayMain.textContent = currentInput;
-        displayFormula.textContent = "CHAOS APPLIED TO NUMBER";
-        calcFrame.style.filter = `hue-rotate(${Math.floor(Math.random() * 360)}deg)`;
+        displayFormula.textContent = "ROULETTE CORRUPTED THE NUMBER!";
+        triggerChaosSpasm();
       } else if (["+", "-", "*", "/", "%"].includes(val)) {
-        storedValue = parseFloat(currentInput);
-        pendingOp = val;
-        currentInput = "0";
-        displayFormula.textContent = `STORED: ${storedValue} [OPERATOR: ${val}]`;
+        promptOperatorConsent(val);
       } else if (val === "=") {
         startBureaucraticCalculation();
       }
     }
 
-    // --- Scramble Buttons Randomly to Defeat Muscle Memory ---
+    // --- Operator Consent Interruption ---
+    let stagedOp = null;
+    function promptOperatorConsent(op) {
+      stagedOp = op;
+      const opNames = { "+": "ADDITION", "-": "SUBTRACTION", "*": "MULTIPLICATION", "/": "DIVISION", "%": "MODULO" };
+      opConfirmText.innerHTML = `Are you psychologically prepared to execute <b>${opNames[op]}</b>?<br><br>Side effects may include cognitive fatigue, elevated systolic pressure, and regret.`;
+      opConfirmModal.style.display = "flex";
+
+      // 40% chance the "Accept" button swaps away on hover!
+      opProceedBtn.onmouseover = () => {
+        if (Math.random() < 0.4) {
+          opProceedBtn.style.transform = `translateX(${Math.random() > 0.5 ? 40 : -40}px)`;
+        }
+      };
+
+      opProceedBtn.onclick = () => {
+        opProceedBtn.style.transform = "none";
+        opConfirmModal.style.display = "none";
+        storedValue = parseFloat(currentInput);
+        pendingOp = stagedOp;
+        currentInput = "0";
+        displayFormula.textContent = `STORED: ${storedValue} [OPERATOR: ${stagedOp}]`;
+        playSuccessChime();
+      };
+    }
+
+    function rejectOperator() {
+      opConfirmModal.style.display = "none";
+      displayFormula.textContent = "OPERATOR CANCELLED. YOU CHOSE PEACE.";
+      playHarshError();
+    }
+
+    // --- Scramble Buttons Randomly ---
     function scrambleRandomKey() {
-      // 30% chance after digit to scramble two buttons' position
-      if (Math.random() < 0.35) {
+      if (Math.random() < 0.4) {
         const buttons = Array.from(document.querySelectorAll(".calc-btn:not(#btn-equals)"));
         const b1 = buttons[Math.floor(Math.random() * buttons.length)];
         const b2 = buttons[Math.floor(Math.random() * buttons.length)];
@@ -840,9 +1088,15 @@
           b2.setAttribute("data-val", tempVal);
           b2.querySelector(".btn-label").textContent = tempLabel;
 
-          displayFormula.textContent = "🔀 ALERT: BUTTONS SHUFFLED FOR YOUR SAFETY";
+          displayFormula.textContent = "🔀 ALERT: BUTTON POSITIONS SCRAMBLED";
         }
       }
+    }
+
+    function triggerChaosSpasm() {
+      calcFrame.style.filter = `hue-rotate(${Math.floor(Math.random() * 360)}deg) invert(0.2)`;
+      playBeep(220, "sawtooth", 0.3, 0.3);
+      setTimeout(() => { calcFrame.style.filter = "none"; }, 1500);
     }
 
     // --- The 5-Stage Bureaucratic Calculation Pipeline ---
@@ -878,7 +1132,7 @@
           playBeep(250, "sine", 0.05);
         }
 
-        // The evil rollback trick at 99%!
+        // Guaranteed 99% Rollback Crash
         if (progress >= 99 && !rolledBack) {
           rolledBack = true;
           clearInterval(progressTimer);
@@ -889,7 +1143,6 @@
           playHarshError();
 
           setTimeout(() => {
-            // Roll back to 22%!
             modalProgress.style.width = "22%";
             modalPhaseTitle.textContent = "Stage 3: Manual CAPTCHA Required to verify humanity!";
             showCaptcha();
@@ -901,7 +1154,7 @@
       }, 200);
     }
 
-    // --- CAPTCHA Puzzle (Phase 3) ---
+    // --- Philosophical CAPTCHA (Phase 3) ---
     function showCaptcha() {
       captchaSection.style.display = "block";
       const questions = [
@@ -911,7 +1164,7 @@
           correct: 2
         },
         {
-          q: "Solve: If 2 + 2 = 4, why are you doing this on a Saturday?",
+          q: "Solve: If 2 + 2 = 4, why are you doing this on a weekend?",
           options: ["Curiosity", "Self-hatred", "Boredom", "Accident"],
           correct: 1
         },
@@ -929,7 +1182,7 @@
       chosen.options.forEach((opt, idx) => {
         const btn = document.createElement("button");
         btn.textContent = opt;
-        btn.style.padding = "6px 12px";
+        btn.style.padding = "7px 14px";
         btn.style.cursor = "pointer";
         btn.style.fontFamily = "Tahoma";
         btn.onclick = () => {
@@ -948,7 +1201,7 @@
       });
     }
 
-    // --- Reveal for 0.6s & Then Redact Behind Ad Wait ---
+    // --- Reveal for 0.6s & Then Redact Behind Mandatory Ad Wait ---
     function revealAndRedactResult() {
       const val2 = parseFloat(currentInput);
       let res = 0;
@@ -959,28 +1212,26 @@
       else if (pendingOp === "%") res = storedValue % val2;
       else res = val2;
 
-      // Sometimes add +1 randomly for chaos
+      // 25% chance of adding +1 for sheer chaos
       if (Math.random() < 0.25 && typeof res === "number") {
         res += 1;
       }
 
       currentInput = res.toString();
       isCalculated = true;
-      equalsEscapes = 0; // reset runaway equals
+      equalsEscapes = 0;
 
-      // Hide modal temporarily to flash the answer
       calcModal.style.display = "none";
       displayMain.textContent = currentInput;
       displayFormula.textContent = "RESULT COMPUTED! MEMORIZE IT NOW!";
       playSuccessChime();
 
-      // Flash on screen for exactly 0.6 seconds, then REDACT!
+      // Flash for 0.6 seconds then REDACT!
       setTimeout(() => {
         displayMain.textContent = "███████";
         displayFormula.textContent = "🔒 RESULT REDACTED. MUST WATCH SPONSOR BREAK.";
         playHarshError();
 
-        // Show paywall/ad timer modal
         calcModal.style.display = "flex";
         modalPhaseTitle.textContent = "Stage 5: Sponsor Engagement Verification";
         revealSection.style.display = "block";
@@ -994,7 +1245,7 @@
           countdown--;
           adTimer.textContent = countdown;
           claimResultBtn.textContent = `Please wait ${countdown}s...`;
-          playTicking();
+          playBeep(880, "square", 0.02, 0.03);
 
           if (countdown <= 0) {
             clearInterval(adInterval);
